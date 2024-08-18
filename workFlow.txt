@@ -9,75 +9,63 @@
         variable assignments or mutable state.
         Language Specifications:
         1. Data Types:
-        - INTEGER: Whole numbers (e.g., -3, 0, 42)
-        - BOOLEAN: True and False
+            - INTEGER: Whole numbers (e.g., -3, 0, 42)
+            - BOOLEAN: True and False
         2. Operations:
         a. Arithmetic Operations (for INTEGERs):
-        - Addition (+)
-        - Subtraction (-)
-        - Multiplication (*)
-        - Division (/) (integer division)
-        - Modulo (%)
+            - Addition (+)
+            - Subtraction (-)
+            - Multiplication (*)
+            - Division (/) (integer division)
+            - Modulo (%)
         b. Boolean Operations:
-        - AND (&&)
-        - OR (||)
-        - NOT (!)
+            - AND (&&)
+            - OR (||)
+            - NOT (!)
         c. Comparison Operations:
-        - Equal to (==)
-        - Not equal to (!=)
-        - Greater than (>)
-        - Less than (<)
-        - Greater than or equal to (>=)
-        - Less than or equal to (<=)
+            - Equal to (==)
+            - Not equal to (!=)
+            - Greater than (>)
+            - Less than (<)
+            - Greater than or equal to (>=)
+            - Less than or equal to (<=)
         3. Functions:
-        - Named function definitions
-        - Anonymous functions (lambda expressions)
-        - Function application
+            - Named function definitions
+            - Anonymous functions (lambda expressions)
+            - Function application
         4. Recursion:
-        Programming Language
-        Dr. Sharon Yalov-Handzel
-        - Support for recursive function calls
-        - It should support a replacement for while loop.
+            - Support for recursive function calls
+            - It should support a replacement for while loop.
         5. Immutability:
-        - All values are immutable
-        - No variable assignments or state changes
-        Project Requirements:
+            - All values are immutable
+            - No variable assignments or state changes
+Project Requirements:
         1. Lexer:
-        - Implement a lexer that tokenizes the input source code
-        - Handle whitespace, comments, and all language constructs
+            - Implement a lexer that tokenizes the input source code
+            - Handle whitespace, comments, and all language constructs
         2. Parser:
-        - Implement a parser that creates an Abstract Syntax Tree (AST) from
-        the tokenized input
-        - The parser should use the BNF of the language. It should read it and
-        parsing the commands according the BNF definition.
-        - Handle function definitions, lambda expressions, and all language
-        constructs
+            - Implement a parser that creates an Abstract Syntax Tree (AST) from the tokenized input
+            - The parser should use the BNF of the language. It should read it and parsing the commands according the BNF definition.
+            - Handle function definitions, lambda expressions, and all language constructs
         3. Interpreter:
-        - Each program in this language should have a suffix *.lambda
-        - The interpreter will be able to execute commands in both interactive
-        mode (line by line) or executing a full program. In both cases, it will print
-        the result of each command after its execution.
-        - Implement an interpreter that evaluates the AST
-        - Support function application, including higher-order functions
-        - Implement a call stack for managing function calls and recursion
+            - Each program in this language should have a suffix *.lambda
+            - The interpreter will be able to execute commands in both interactive mode (line by line) or executing a full program. In both cases, it will print the result of each command after its execution.
+            - Implement an interpreter that evaluates the AST
+            - Support function application, including higher-order functions
+            - Implement a call stack for managing function calls and recursion
         4. Error Handling:
-        - Implement comprehensive error checking and reporting
-        - Provide meaningful error messages for syntax errors, type errors, and
-        runtime errors
+            - Implement comprehensive error checking and reporting
+            - Provide meaningful error messages for syntax errors, type errors, and runtime errors
         5. REPL (Read-Eval-Print Loop):
-        - Implement a REPL for interactive use of the language
+            - Implement a REPL for interactive use of the language
         6. Documentation:
-        - Provide the BNF (Backus–Naur form) grammar
-        - Provide clear documentation for the language syntax and features
-        - Include comments in the code explaining key components and
-        algorithms
-        Programming Language
-        Dr. Sharon Yalov-Handzel
-        - Write a document describing all of the design considerations and
-        assumptions relating to that section of the language.
+            - Provide the BNF (Backus–Naur form) grammar
+            - Provide clear documentation for the language syntax and features
+            - Include comments in the code explaining key components and algorithms
+            - Write a document describing all of the design considerations and assumptions relating to that section of the language.
         8. Testing:
-        - Develop a comprehensive test suite covering all language features
-        - Include edge cases and error conditions in the tests
+            - Develop a comprehensive test suite covering all language features
+            - Include edge cases and error conditions in the tests
         Sample Language Syntax:
         ```
         # Function definition
