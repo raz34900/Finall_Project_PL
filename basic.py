@@ -7,9 +7,7 @@ from string_with_arrows import *
 # CONSTANTS
 ############################
 
-
 DIGITS = '0123456789'
-
 
 ############################
 # ERRORS
@@ -276,8 +274,6 @@ class Parser:
 
     def term(self):
         return self.bin_op(self.factor, (TT_MUL, TT_DIV, TT_MOD))
-
-
 
     def expr(self):
         return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
