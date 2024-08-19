@@ -1,17 +1,27 @@
-############################
-# IMPORTS
-############################
+# _____ __  __ _____   ____  _____ _______ _____
+# |_   _|  \/  |  __ \ / __ \|  __ \__   __/ ____|
+#   | | | \  / | |__) | |  | | |__) | | | | (___
+#   | | | |\/| |  ___/| |  | |  _  /  | |  \___ \
+#  _| |_| |  | | |    | |__| | | \ \  | |  ____) |
+# |_____|_|  |_|_|     \____/|_|  \_\ |_| |_____/
+
 from string_with_arrows import *
 
-############################
-# CONSTANTS
-############################
+#   _____ ____  _   _  _____ _______       _   _ _______ _____
+#  / ____/ __ \| \ | |/ ____|__   __|/\   | \ | |__   __/ ____|
+# | |   | |  | |  \| | (___    | |  /  \  |  \| |  | | | (___
+# | |   | |  | | . ` |\___ \   | | / /\ \ | . ` |  | |  \___ \
+# | |___| |__| | |\  |____) |  | |/ ____ \| |\  |  | |  ____) |
+# \_____\____/|_| \_|_____/   |_/_/    \_\_| \_|  |_| |_____/
 
 DIGITS = '0123456789'
 
-############################
-# ERRORS
-############################
+# ______ _____  _____   ____  _____   _____
+# |  ____|  __ \|  __ \ / __ \|  __ \ / ____|
+# | |__  | |__) | |__) | |  | | |__) | (___
+# |  __| |  _  /|  _  /| |  | |  _  / \___ \
+# | |____| | \ \| | \ \| |__| | | \ \ ____) |
+# |______|_|  \_\_|  \_\\____/|_|  \_\_____/
 
 class Error:
     def __init__(self, pos_start, pos_end, error_name, details):
@@ -21,8 +31,8 @@ class Error:
         self.details = details
 
     def __str__(self):
-        result = f'{self.error_name}: {self.details}'
-        result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
+        result = f'\n{self.error_name}: {self.details}'
+        result += f'\nFile {self.pos_start.fn}, line {self.pos_start.ln + 1}'
         result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
         return result
 
@@ -39,10 +49,17 @@ class InvalidSyntaxError(Error):
     def __init__(self, pos_start, pos_end, details=''):
         super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
 
+class RunTimeError(Error):
+    def __init__(self, pos_start, pos_end, details = ''):
+        super().__init__(pos_start, pos_end, 'RunTime Error', details)
 
-############################
-# POSITION
-############################
+#  _____   ____   _____ _____ _______ _____ ____  _   _
+# |  __ \ / __ \ / ____|_   _|__   __|_   _/ __ \| \ | |
+# | |__) | |  | | (___   | |    | |    | || |  | |  \| |
+# |  ___/| |  | |\___ \  | |    | |    | || |  | | . ` |
+# | |    | |__| |____) |_| |_   | |   _| || |__| | |\  |
+# |_|     \____/|_____/|_____|  |_|  |_____\____/|_| \_|
+#
 
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
@@ -65,12 +82,13 @@ class Position:
     def copy(self):
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
+#  _______ ____  _  ________ _   _  _____
+# |__   __/ __ \| |/ /  ____| \ | |/ ____|
+#    | | | |  | | ' /| |__  |  \| | (___
+#    | | | |  | |  < |  __| | . ` |\___ \
+#    | | | |__| | . \| |____| |\  |____) |
+#    |_|  \____/|_|\_\______|_| \_|_____/
 
-############################
-# TOKENS
-############################
-
-#DataTypes
 TT_INT = 'INT'  #Integer
 TT_BOOL = 'BOOL'  #Boolean
 #Boolean operators
@@ -118,9 +136,13 @@ class Token:
         return f'{self.type}'
 
 
-############################
-# LEXER
-############################
+#  _      ________   ________ _____
+# | |    |  ____\ \ / /  ____|  __ \
+# | |    | |__   \ V /| |__  | |__) |
+# | |    |  __|   > < |  __| |  _  /
+# | |____| |____ / . \| |____| | \ \
+# |______|______/_/ \_\______|_|  \_ \
+
 
 class Lexer:
     def __init__(self, fn, text):
@@ -191,13 +213,21 @@ class Lexer:
             return Token(TT_INT, float(num_str), pos_start, self.pos)
 
 
-############################
-# NODES
-############################
+#  _   _  ____  _____  ______  _____
+# | \ | |/ __ \|  __ \|  ____|/ ____|
+# |  \| | |  | | |  | | |__  | (___
+# | . ` | |  | | |  | |  __|  \___ \
+# | |\  | |__| | |__| | |____ ____) |
+# |_| \_|\____/|_____/|______|_____/
+
 
 class NumberNode:
     def __init__(self, tok):
         self.tok = tok
+        self.pos = tok.pos_start  ######################## added
+
+        self.pos_start = self.tok.pos_start
+        self.pos_end = self.tok.pos_end
 
     def __repr__(self):
         return f'{self.tok}'
@@ -209,13 +239,29 @@ class BinOpNode:
         self.op_tok = op_tok
         self.right_node = right_node
 
+        self.pos_start = self.left_node.pos_start
+        self.pos_end = self.right_node.pos_end
+
     def __repr__(self):
         return f'({self.left_node}, {self.op_tok}, {self.right_node})'
+class UnaryOpNode:
+        def __init__(self, op_tok, node):
+            self.op_tok = op_tok
+            self.node = node
+            self.pos_start = self.op_tok.pos_start
+            #self.pos_end = self.op_tok.pos_end
+            self.pos_end = getattr(node, 'pos', self.op_tok.pos_end) ################### changed
+
+        def __repr__(self):
+            return f'({self.op_tok}, {self.node})'
 
 
-############################
-#PARSE RESULT
-############################
+#  _____        _____   _____ ______   _____  ______  _____ _    _ _   _______
+# |  __ \ /\   |  __ \ / ____|  ____| |  __ \|  ____|/ ____| |  | | | |__   __|
+# | |__) /  \  | |__) | (___ | |__    | |__) | |__  | (___ | |  | | |    | |
+# |  ___/ /\ \ |  _  / \___ \|  __|   |  _  /|  __|  \___ \| |  | | |    | |
+# | |  / ____ \| | \ \ ____) | |____  | | \ \| |____ ____) | |__| | |____| |
+# |_| /_/    \_\_|  \_\_____/|______| |_|  \_\______|_____/ \____/|______|_|
 
 class ParseResult:
     def __init__(self):
@@ -237,9 +283,12 @@ class ParseResult:
         return self
 
 
-############################
-# PARSER
-############################
+#  _____        _____   _____ ______ _____
+# |  __ \ /\   |  __ \ / ____|  ____|  __ \
+# | |__) /  \  | |__) | (___ | |__  | |__) |
+# |  ___/ /\ \ |  _  / \___ \|  __| |  _  /
+# | |  / ____ \| | \ \ ____) | |____| | \ \
+# |_| /_/    \_\_|  \_\_____/|______|_|  \_\
 
 class Parser:
     def __init__(self, tokens):
@@ -264,10 +313,28 @@ class Parser:
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
-        if tok.type in (TT_INT):
+        if tok.type in (TT_PLUS, TT_MINUS):
+            res.register(self.advance())
+            factor = res.register(self.factor())
+            if res.error: return res
+            return res.success(UnaryOpNode(tok, factor))
+
+        elif tok.type in (TT_INT):
             res.register(self.advance())
             return res.success(NumberNode(tok))
+
+        elif tok.type == TT_LPAREN:
+            res.register(self.advance())
+            expr = res.register(self.expr())
+            if res.error: return res
+            if self.current_tok.type == TT_RPAREN:
+                res.register(self.advance())
+                return res.success(expr)
+            else:
+                return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected ')'"))
+
         return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, 'Expected int'))
+
 
     def term(self):
         return self.bin_op(self.factor, (TT_MUL, TT_DIV))
@@ -295,10 +362,154 @@ class Parser:
 
         return res.success(left)
 
+#  _____  _    _ _   _ _______ _____ __  __ ______    _____  ______  _____ _    _ _   _______
+# |  __ \| |  | | \ | |__   __|_   _|  \/  |  ____|  |  __ \|  ____|/ ____| |  | | | |__   __|
+# | |__) | |  | |  \| |  | |    | | | \  / | |__     | |__) | |__  | (___ | |  | | |    | |
+# |  _  /| |  | | . ` |  | |    | | | |\/| |  __|    |  _  /|  __|  \___ \| |  | | |    | |
+# | | \ \| |__| | |\  |  | |   _| |_| |  | | |____   | | \ \| |____ ____) | |__| | |____| |
+# |_|  \_\\____/|_| \_|  |_|  |_____|_|  |_|______|  |_|  \_\______|_____/ \____/|______|_|
 
-############################
-#RUN
-############################
+class RunTimeResult:
+    def __init__(self):
+        self.value = None
+        self.error = None
+
+    # def register(self, res): ################## instance added to the function
+    #     if isinstance(res, RunTimeResult):
+    #         if res.error: self.error = res.error
+    #         return res.value
+    #     return res
+
+    def register(self, res):
+        if res.error: self.error = res.error
+        return res.value
+
+    def success(self, value):
+        self.value = value
+        return self
+
+    def failure(self, error):
+        self.error = error
+        return self
+
+# __      __     _     _    _ ______  _____
+# \ \    / /\   | |   | |  | |  ____|/ ____|
+#  \ \  / /  \  | |   | |  | | |__  | (___
+#   \ \/ / /\ \ | |   | |  | |  __|  \___ \
+#    \  / ____ \| |___| |__| | |____ ____) |
+#     \/_/    \_\______\____/|______|_____/
+
+
+class Number:
+    def __init__(self, value):
+        self.value = value
+        self.set_pos()
+
+    def set_pos(self, pos_start = None, pos_end = None):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        return self
+
+    def added_to(self, other):
+        if isinstance(other, Number):
+            return Number(self.value + other.value), None
+
+    def subbed_by(self, other):
+        if isinstance(other, Number):
+            return Number(self.value - other.value) , None
+
+    def multed_by(self, other):
+        if isinstance(other, Number):
+            return Number(self.value * other.value) , None
+
+    def dived_by(self, other):
+        if isinstance(other, Number):
+            if other.value == 0:
+                return None, RunTimeError(other.pos_start, other.pos_end, 'Division by zero')
+            return Number(self.value / other.value), None
+
+
+    def moded_by(self, other):
+        if isinstance(other, Number):
+            if other.value == 0:
+                return None, RunTimeError(other.pos_start, other.pos_end, 'Modulo by zero')
+            return Number(self.value % other.value) , None
+
+    def __repr__(self):
+        return str(self.value)
+
+
+
+#  _____ _   _ _______ ______ _____  _____  _____  ______ _______ ______ _____
+# |_   _| \ | |__   __|  ____|  __ \|  __ \|  __ \|  ____|__   __|  ____|  __ \
+#   | | |  \| |  | |  | |__  | |__) | |__) | |__) | |__     | |  | |__  | |__) |
+#   | | | . ` |  | |  |  __| |  _  /|  ___/|  _  /|  __|    | |  |  __| |  _  /
+#  _| |_| |\  |  | |  | |____| | \ \| |    | | \ \| |____   | |  | |____| | \ \
+# |_____|_| \_|  |_|  |______|_|  \_\_|    |_|  \_\______|  |_|  |______|_|  \_\
+
+class Interpreter:
+    def visit(self, node):
+        method_name = f'visit_{type(node).__name__}'
+        method = getattr(self, method_name, self.no_visit_method)
+        return method(node)
+    def no_visit_method(self, node):
+        raise Exception(f'No visit_{type(node).__name__} method defined')
+
+    ############################################
+
+
+    def visit_NumberNode(self, node):
+        return RunTimeResult().success(
+            Number(node.tok.value).set_pos(node.pos_start, node.pos_end))
+    def visit_BinOpNode(self, node):
+        res = RunTimeResult()
+        left = res.register(self.visit(node.left_node))
+        if res.error: return res
+        right = res.register(self.visit(node.right_node))
+        if res.error: return res
+
+        if node.op_tok.type == TT_PLUS:
+            result, error = left.added_to(right)
+        elif node.op_tok.type == TT_MINUS:
+            result, error =  left.subbed_by(right)
+        elif node.op_tok.type == TT_MUL:
+            result, error = left.multed_by(right)
+        elif node.op_tok.type == TT_DIV:
+            result, error = left.dived_by(right)
+        elif node.op_tok.type == TT_MOD:
+            result, error = left.moded_by(right)
+
+        if error:
+            return res.failure(error)
+        else:
+            return res.success(result.set_pos(node.pos_start, node.pos_end))
+
+
+    def visit_UnaryOpNode(self, node):
+        res = RunTimeResult()
+        number = res.register(self.visit(node.node))
+        if res.error: return res
+
+        error = None
+        if node.op_tok.type == TT_MINUS:
+            number, error = number.multed_by(Number(-1))
+
+        if error:
+            return res.failure(error)
+        else:
+            return res.success(number.set_pos(node.pos_start, node.pos_end))
+
+
+
+
+
+#  _____  _    _ _   _
+# |  __ \| |  | | \ | |
+# | |__) | |  | |  \| |
+# |  _  /| |  | | . ` |
+# | | \ \| |__| | |\  |
+# |_|  \_\\____/|_| \_|
+
 
 def run(fn, text):
     # Generate tokens
@@ -309,5 +520,14 @@ def run(fn, text):
     # General AST
     parser = Parser(tokens)
     ast = parser.parse()
+    if ast.error: return None, ast.error
 
-    return ast.node, ast.error
+    #Run the interpreter
+    interpreter = Interpreter()
+    result = interpreter.visit(ast.node)
+
+    return result.value, result.error
+
+
+
+
