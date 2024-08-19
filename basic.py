@@ -260,7 +260,7 @@ class Parser:
         res = self.expr()
         if not res.error and self.current_tok.type != TT_EOF:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end,
-                                                  "Expected '+', '-', '*', or '/'"))
+                                                  "Expected '+', '-', '*', '%', or '/'"))
         return res
 
     def factor(self):
@@ -273,6 +273,11 @@ class Parser:
 
     def term(self):
         return self.bin_op(self.factor, (TT_MUL, TT_DIV))
+
+    def term(self):
+        return self.bin_op(self.factor, (TT_MUL, TT_DIV, TT_MOD))
+
+
 
     def expr(self):
         return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
