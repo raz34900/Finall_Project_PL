@@ -8,6 +8,13 @@ arith-expr	:	term ((PLUS|MINUS) term)*
 
 term		: factor ((MUL|DIV) factor)*
 
-factor  : INT|IDENTIFIRE
-		: (PLUS|MINUS) factor
-		: LPAREN expr RPAREN
+call		: factor (LPAREN (expr (COMMA expr)*)? RPAREN)?
+
+factor  	: INT|IDENTIFIRE
+			: (PLUS|MINUS) factor
+			: LPAREN expr RPAREN
+			: func-def
+
+func-def	: KEYWORD:FUNC IDENTIFIER?
+			: LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN
+			: ARROW expr
