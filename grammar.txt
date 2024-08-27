@@ -13,8 +13,14 @@ call		: factor (LPAREN (expr (COMMA expr)*)? RPAREN)?
 factor  	: INT|IDENTIFIRE
 			: (PLUS|MINUS) factor
 			: LPAREN expr RPAREN
+			: if-expr
 			: func-def
+			
+if-expr		: KEYWORD:IF expr KEYWORD:THEN expr 
+			: (KEYWORD:ELIF expr KEYWORD:THEN expr)*
+			:(KEYWORD:ELSE expr)?
 
 func-def	: KEYWORD:FUNC IDENTIFIER?
 			: LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN
 			: ARROW expr
+			
