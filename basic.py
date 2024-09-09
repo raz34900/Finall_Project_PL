@@ -649,32 +649,36 @@ class Parser:
 
     def expr(self):
         res = ParseResult()
-        if self.current_tok.matches(TT_KEYWORD, 'VAR'):
-            res.register(self.advance())
-
-            if self.current_tok.type != TT_IDENTIFIER:
-                return res.failure(InvalidSyntaxError(self.current_tok.pos_start, 
-                                                      self.current_tok.pos_end, "Expected identifier"))
-            var_name = self.current_tok
-            res.register(self.advance())
-
-            if self.current_tok.type != TT_ISA:
-                return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
-                                                       self.current_tok.pos_end, "Expected '='"))
-            res.register(self.advance())
-
-            expr = res.register(self.expr())
-            if res.error: return res
-            return res.success(VarAssignNode(var_name, expr))
-
-        
-        node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD , 'AND'), (TT_KEYWORD, 'OR'))))
+        # if self.current_tok.matches(TT_KEYWORD, 'VAR'):
+        #     res.register(self.advance())
+        #
+        #     if self.current_tok.type != TT_IDENTIFIER:
+        #         return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+        #                                               self.current_tok.pos_end, "Expected identifier"))
+        #     var_name = self.current_tok
+        #     res.register(self.advance())
+        #
+        #     if self.current_tok.type != TT_ISA:
+        #         return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+        #                                                self.current_tok.pos_end, "Expected '='"))
+        #     res.register(self.advance())
+        #
+        #     expr = res.register(self.expr())
+        #     if res.error: return res
+        #     return res.success(VarAssignNode(var_name, expr))
+        #
+        #
+        # node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD , 'AND'), (TT_KEYWORD, 'OR'))))
+        # if res.error:
+        #     return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+        #                                           self.current_tok.pos_end, "Expected int, '+', '-', 'VAR'"))
+        #
+        # return res.success(node)
+        node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD, 'AND'), (TT_KEYWORD, 'OR'))))
         if res.error:
-            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, 
-                                                  self.current_tok.pos_end, "Expected int, '+', '-', 'VAR'"))   
-        
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+                                                  self.current_tok.pos_end, "Expected int, '+', '-', 'FUNC'"))
         return res.success(node)
-    
     
     def func_def(self):
         res = ParseResult()
@@ -963,6 +967,51 @@ class Number(Value):
         return new_number
     
 class Function(Value):
+    # def __init__(self, name, body_node, arg_name):
+    #     super().__init__()
+    #     self.name = name or "<anonymous>"
+    #     self.body_node = body_node
+    #     self.arg_name = arg_name
+    #
+    # def execute(self, args):
+    #     res= RunTimeResult()
+    #     interpreter = Interpreter()
+    #     new_context = Context(self.name, self.context, self.pos_start)
+    #     new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
+    #
+    #     if len(args) > len(self.arg_name):
+    #         return res.failure(RunTimeError(
+	# 			self.pos_start, self.pos_end,
+	# 			f"{len(args) - len(self.arg_name)} too many args passed into '{self.name}'",
+	# 			self.context
+	# 		))
+	#
+    #     if len(args) < len(self.arg_name):
+    #         return res.failure(RunTimeError(
+	# 			self.pos_start, self.pos_end,
+	# 			f"{len(self.arg_name) - len(args)} too few args passed into '{self.name}'",
+	# 			self.context
+	# 		))
+    #
+    #     for i in range(len(args)):
+    #         arg_name = self.arg_name[i]
+    #         arg_value = args[i]
+    #         arg_value.set_context(new_context)
+    #         new_context.symbol_table.set(arg_name, arg_value)
+    #
+    #     value = res.register(interpreter.visit(self.body_node, new_context))
+    #     if res.error: return res
+    #     return res.success(value)
+    #
+    # def copy(self):
+    #     new_function = Function(self.name, self.body_node, self.arg_name)
+    #     new_function.set_context(self.context)
+    #     new_function.set_pos(self.pos_start, self.pos_end)
+    #     return new_function
+    #
+    # def __repr__(self):
+    #     return f"<function {self.name}>"
+
     def __init__(self, name, body_node, arg_name):
         super().__init__()
         self.name = name or "<anonymous>"
@@ -970,34 +1019,52 @@ class Function(Value):
         self.arg_name = arg_name
 
     def execute(self, args):
-        res= RunTimeResult()
+        res = RunTimeResult()
         interpreter = Interpreter()
         new_context = Context(self.name, self.context, self.pos_start)
         new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
 
+        # Create a trace log for function calls
+        call_trace = []
+
+        # Check if we have too many or too few arguments
         if len(args) > len(self.arg_name):
             return res.failure(RunTimeError(
-				self.pos_start, self.pos_end,
-				f"{len(args) - len(self.arg_name)} too many args passed into '{self.name}'",
-				self.context
-			))
-		
+                self.pos_start, self.pos_end,
+                f"{len(args) - len(self.arg_name)} too many args passed into '{self.name}'",
+                self.context
+            ))
+
         if len(args) < len(self.arg_name):
             return res.failure(RunTimeError(
-				self.pos_start, self.pos_end,
-				f"{len(self.arg_name) - len(args)} too few args passed into '{self.name}'",
-				self.context
-			))
+                self.pos_start, self.pos_end,
+                f"{len(self.arg_name) - len(args)} too few args passed into '{self.name}'",
+                self.context
+            ))
 
+        # Assign the arguments to the function's local scope
         for i in range(len(args)):
             arg_name = self.arg_name[i]
             arg_value = args[i]
             arg_value.set_context(new_context)
             new_context.symbol_table.set(arg_name, arg_value)
 
+        # Recursion support: Add the function itself to the symbol table
+        new_context.symbol_table.set(self.name, self)
+
+        # Log the function call with arguments
+        arg_str = ", ".join([f"{self.arg_name[i]}={args[i]}" for i in range(len(args))])
+        call_trace.append(f"Call: {self.name}({arg_str})")
+
+        # Execute the body of the function
         value = res.register(interpreter.visit(self.body_node, new_context))
         if res.error: return res
-        return res.success(value)
+
+        # Log the function return value
+        call_trace.append(f"Return: {self.name} -> {value}")
+
+        # Store the trace in the result
+        return res.success((value, call_trace))
 
     def copy(self):
         new_function = Function(self.name, self.body_node, self.arg_name)
@@ -1168,32 +1235,88 @@ class Interpreter:
         return res.success(None)
         
     def visit_FuncDefNode(self, node, context):
+        # res = RunTimeResult()
+        # func_name = node.var_name_tok.value if node.var_name_tok else None # checks if the function has a name
+        # body_node = node.body_node
+        # arg_names = [arg_name.value for arg_name in node.arg_name_toks] # gets the arguments of the function
+        # func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start, node.pos_end)
+        #
+        # if node.var_name_tok:
+        #     context.symbol_table.set(func_name, func_value)
+        # return res.success(func_value)
+
         res = RunTimeResult()
-        func_name = node.var_name_tok.value if node.var_name_tok else None # checks if the function has a name
+        func_name = node.var_name_tok.value if node.var_name_tok else None  # Check if the function has a name
         body_node = node.body_node
-        arg_names = [arg_name.value for arg_name in node.arg_name_toks] # gets the arguments of the function
-        func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start, node.pos_end)
-        
+        arg_names = [arg_name.value for arg_name in node.arg_name_toks]  # Get the arguments of the function
+
+        # Create the function
+        func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start,
+                                                                                            node.pos_end)
+
+        # If the function has a name, add it to the symbol table so it can refer to itself (allow recursion)
         if node.var_name_tok:
             context.symbol_table.set(func_name, func_value)
+
         return res.success(func_value)
-    
+
+    # def visit_CallNode(self, node, context):
+    #     res = RunTimeResult()
+    #     args = []
+    #
+    #     value_to_call = res.register(self.visit(node.node_to_call, context))
+    #     if res.error: return res
+    #     value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end) # gets the function to call
+    #
+    #     for arg_node in node.arg_nodes: # gets the arguments of the function
+    #         args.append(res.register(self.visit(arg_node, context)))
+    #         if res.error: return res
+    #
+    #     return_value = res.register(value_to_call.execute(args))
+    #     if res.error: return res
+    #     return res.success(return_value)
+    # def visit_CallNode(self, node, context):
+    #     res = RunTimeResult()
+    #     args = []
+    #
+    #     value_to_call = res.register(self.visit(node.node_to_call, context))
+    #     if res.error: return res
+    #     value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)  # gets the function to call
+    #
+    #     for arg_node in node.arg_nodes:  # gets the arguments of the function
+    #         args.append(res.register(self.visit(arg_node, context)))
+    #         if res.error: return res
+    #
+    #     # Execute the function and get the value and trace
+    #     return_value, call_trace = res.register(value_to_call.execute(args))
+    #     if res.error: return res
+    #
+    #     # Print or store the call trace
+    #     for trace in call_trace:
+    #         print(trace)
+    #
+    #     return res.success(return_value)
     def visit_CallNode(self, node, context):
         res = RunTimeResult()
         args = []
-         
+
         value_to_call = res.register(self.visit(node.node_to_call, context))
         if res.error: return res
-        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end) # gets the function to call
-       
-        for arg_node in node.arg_nodes: # gets the arguments of the function
+        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)  # gets the function to call
+
+        for arg_node in node.arg_nodes:  # gets the arguments of the function
             args.append(res.register(self.visit(arg_node, context)))
             if res.error: return res
 
-        return_value = res.register(value_to_call.execute(args))
+        # Execute the function (functions are pure, no state changes)
+        return_value, call_trace = res.register(value_to_call.execute(args))
         if res.error: return res
-        return res.success(return_value)
 
+        # Print or store the call trace (if desired)
+        for trace in call_trace:
+            print(trace)
+
+        return res.success(return_value)
 #  _____  _    _ _   _
 # |  __ \| |  | | \ | |
 # | |__) | |  | |  \| |
