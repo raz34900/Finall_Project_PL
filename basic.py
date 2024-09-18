@@ -1103,7 +1103,14 @@ class SymbolTable:
         return value
 
     def set(self, name, value):
-        self.symbols[name] = value
+        # Check if the variable already exists
+        if name in self.symbols:
+            # Instead of raising an exception, return an error message
+            print(f"Variable '{name}' already exists.")
+            return RunTimeResult().failure(RunTimeError(None, None, f"Variable '{name}' already exists.", None))
+        else:
+            self.symbols[name] = value
+            return None  # No error, successful assignment
 
     def remove(self, name):
         del self.symbols[name]
