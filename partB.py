@@ -3,8 +3,8 @@ from functools import reduce
 # 1.) Implement a Fibonacci sequence generator using a single lambda expression that
 # returns a list of the first n Fibonacci numbers. The function should take n as an input.
 
-fibGen = lambda n: (lambda fib: [fib(i) for i in range(n)])(lambda fib: fib if fib <= 1 else fibGen(n - 1)[fib - 1] + fibGen(n - 1)[fib - 2])
-print(fibGen(6))  # Output: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+fibGen = lambda n: reduce(lambda x, _: x + [x[-1] + x[-2]], range(n-2), [0, 1])[:n]
+print(fibGen(10))  # Output: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 
 # explanation:
 # (lambda fib: [fib(i) for i in range(n)]) - this lambda function creates a list of the first n fibonacci numbers
