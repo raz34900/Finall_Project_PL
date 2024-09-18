@@ -649,35 +649,29 @@ class Parser:
 
     def expr(self):
         res = ParseResult()
-        # if self.current_tok.matches(TT_KEYWORD, 'VAR'):
-        #     res.register(self.advance())
-        #
-        #     if self.current_tok.type != TT_IDENTIFIER:
-        #         return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
-        #                                               self.current_tok.pos_end, "Expected identifier"))
-        #     var_name = self.current_tok
-        #     res.register(self.advance())
-        #
-        #     if self.current_tok.type != TT_ISA:
-        #         return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
-        #                                                self.current_tok.pos_end, "Expected '='"))
-        #     res.register(self.advance())
-        #
-        #     expr = res.register(self.expr())
-        #     if res.error: return res
-        #     return res.success(VarAssignNode(var_name, expr))
-        #
-        #
-        # node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD , 'AND'), (TT_KEYWORD, 'OR'))))
-        # if res.error:
-        #     return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
-        #                                           self.current_tok.pos_end, "Expected int, '+', '-', 'VAR'"))
-        #
-        # return res.success(node)
+
+        if self.current_tok.matches(TT_KEYWORD, 'VAR'):
+            res.register(self.advance())
+
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+                                                      self.current_tok.pos_end, "Expected identifier"))
+            var_name = self.current_tok
+            res.register(self.advance())
+
+            if self.current_tok.type != TT_ISA:
+                return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
+                                                      self.current_tok.pos_end, "Expected '='"))
+            res.register(self.advance())
+
+            expr = res.register(self.expr())
+            if res.error: return res
+            return res.success(VarAssignNode(var_name, expr))
+
         node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD, 'AND'), (TT_KEYWORD, 'OR'))))
         if res.error:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start,
-                                                  self.current_tok.pos_end, "Expected int, '+', '-', 'FUNC'"))
+                                                  self.current_tok.pos_end, "Expected int, '+', '-', 'FUNC', or 'VAR'"))
         return res.success(node)
     
     def func_def(self):
