@@ -1106,8 +1106,8 @@ class SymbolTable:
         # Check if the variable already exists
         if name in self.symbols:
             # Instead of raising an exception, return an error message
-            print(f"Variable '{name}' already exists.")
-            return RunTimeResult().failure(RunTimeError(None, None, f"Variable '{name}' already exists.", None))
+            print(f"Variable/Function '{name}' already exists.")
+            return RunTimeResult().failure(RunTimeError(None, None, f"Variable/Function '{name}' already exists.", None))
         else:
             self.symbols[name] = value
             return None  # No error, successful assignment
@@ -1140,16 +1140,25 @@ class Interpreter:
         return RunTimeResult().success(
             Number(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
-    
+
     def visit_VarAssignNode(self, node, context):
         res = RunTimeResult()
         var_name = node.var_name_tok.value
+
+        # Check if variable already exists
+        if context.symbol_table.get(var_name) is not None:
+            return res.failure(RunTimeError(
+                node.pos_start, node.pos_end,
+                f"Variable '{var_name}' already exists",
+                context
+            ))
+
         value = res.register(self.visit(node.value_node, context))
         if res.error: return res
 
-        context.symbol_table.set(var_name, value)
+        context.symbol_table.set(var_name,value)
         return res.success(value)
-    
+
     def visit_VarAccessNode(self, node, context):
         res = RunTimeResult()
         var_name = node.var_name_tok.value
@@ -1250,6 +1259,12 @@ class Interpreter:
         func_name = node.var_name_tok.value if node.var_name_tok else None  # Check if the function has a name
         body_node = node.body_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]  # Get the arguments of the function
+        if func_name and context.symbol_table.get(func_name) is not None:
+            return res.failure(RunTimeError(
+                node.pos_start, node.pos_end,
+                f"Function '{func_name}' already exists",
+                context
+            ))
 
         # Create the function
         func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start,
