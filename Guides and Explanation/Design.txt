@@ -1,0 +1,42 @@
+-----------------------------------------
+            Trade-offs
+-----------------------------------------
+1. **Simple Grammar**
+   - The grammar was designed to be simple and easily interpretable, which makes the language easy to learn.
+   - However, it limits the expressiveness of the language.
+
+2. **Statically Defined Functions**
+   - Functions are defined using the `FUNC` keyword, but the language lacks advanced features such as anonymous functions or closures, limiting functional programming capabilities.
+
+3. **Limited Data Types**
+   - Currently supports only integer values.
+   - No support for floating-point numbers, strings, arrays, or complex data structures.
+
+4. **Basic Control Flow**
+   - The `IF`, `ELIF`, and `ELSE` control flow statements are present.
+   - No loops (`for`, `while`), which limits iteration abilities.
+
+5. **Error Handling**
+   - Errors like division by zero are handled gracefully, but error messages are basic.
+   - No sophisticated error handling or exception mechanism.
+
+-----------------------------------------
+            Limitations
+-----------------------------------------
+1. **Lack of Complex Data Types**
+   - The language only supports integers and lacks complex data types such as arrays, dictionaries, or strings.
+
+2. **No Built-in Functions or Libraries**
+   - The language lacks built-in functions and standard libraries for common operations like input/output, mathematical functions, or string manipulation.
+
+3. **No Type System**
+   - No type system or type checking.
+   - Variables hold only integer values, and functions also return only integer values, limiting versatility.
+
+4. **No Loop Constructs**
+   - No constructs for iteration (`for` or `while` loops).
+   - Users must use recursion for iterative behavior, which can be less efficient and harder to write.
+
+5. **No Classes or Object-Oriented Features**
+   - No classes or objects.
+   - The language lacks support for OOP, which may hinder the ability to model complex systems.

@@ -1,98 +1,6 @@
-
-### Documentation: BNF Grammar, Language Syntax, Features, and Analysis
-
----
-
-#### 1. Introduction
-This document provides an overview of a custom programming language and its implementation based on Backus-Naur Form (BNF) grammar. It details the language syntax, structure, trade-offs, and limitations. The language provides constructs such as variable assignment, arithmetic operations, function definitions, conditional statements, and more.
-
-#### 2. Overview of BNF Grammar
-
-Below is the BNF grammar that defines the syntax of this custom language. The grammar is used to parse and interpret the language.
-
-#### 2.1 Grammar Rules
-
-##### Expression (`expr`):
-- `expr`: Represents expressions, which include assignments or conditional operations.
-  ```bnf
-  expr ::= 'VAR' IDENTIFIER '=' expr
-         | comp-expr (( 'AND' | 'OR' ) comp-expr)*
-  ```
-  - This includes:
-    - Variable assignments (`VAR IDENTIFIER = expr`)
-    - Logical expressions involving `AND` and `OR` operations.
-
-##### Comparison Expression (`comp-expr`):
-- `comp-expr`: Represents comparison expressions, supporting basic arithmetic comparisons and logical NOT.
-  ```bnf
-  comp-expr ::= 'NOT' comp-expr
-              | arith-expr (( '==' | '!=' | '<' | '>' | '<=' | '>=' ) arith-expr)*
-  ```
-  - This includes:
-    - Logical negation (`NOT comp-expr`)
-    - Arithmetic expressions with comparison operators such as `==`, `!=`, `<`, `>`, `<=`, `>=`.
-
-##### Arithmetic Expression (`arith-expr`):
-- `arith-expr`: Represents arithmetic expressions involving addition or subtraction.
-  ```bnf
-  arith-expr ::= term (( '+' | '-' ) term)*
-  ```
-  - This includes:
-    - Addition and subtraction operations between terms.
-
-##### Term (`term`):
-- `term`: Represents multiplication, division, and modulo operations between factors.
-  ```bnf
-  term ::= factor (( '*' | '/' | '%' ) factor)*
-  ```
-  - This includes:
-    - Multiplication, division, and modulo operations.
-
-##### Function Call (`call`):
-- `call`: Represents a function call.
-  ```bnf
-  call ::= factor ( '(' (expr (',' expr)*)? ')' )?
-  ```
-  - This includes:
-    - A function followed by optional arguments enclosed in parentheses.
-    - Allows zero or more arguments, separated by commas.
-
-##### Factor (`factor`):
-- `factor`: Represents atomic components of expressions.
-  ```bnf
-  factor ::= INT | IDENTIFIER
-           | ( '+' | '-' ) factor
-           | '(' expr ')'
-           | if-expr
-           | func-def
-  ```
-  - This includes:
-    - Integers, identifiers (variables), unary plus, and minus.
-    - Parenthesized expressions, if-else expressions, and function definitions.
-
-##### Conditional Expression (`if-expr`):
-- `if-expr`: Represents conditional (`if-elif-else`) expressions.
-  ```bnf
-  if-expr ::= 'IF' expr 'THEN' expr
-            | ('ELIF' expr 'THEN' expr)*
-            | ('ELSE' expr)?
-  ```
-  - This includes:
-    - An `IF` block followed by optional `ELIF` and `ELSE` blocks.
-    - Conditions are evaluated in sequence, and the corresponding expression is executed.
-
-##### Function Definition (`func-def`):
-- `func-def`: Represents function definition.
-  ```bnf
-  func-def ::= 'FUNC' IDENTIFIER?
-             | '(' (IDENTIFIER (',' IDENTIFIER)*)? ')'
-             | '->' expr
-  ```
-  - This includes:
-    - Functions can have an optional name and argument list.
-    - Function body defined after `->`.
-
-#### 3. Language Features
+-----------------------------------------
+            Language Features
+-----------------------------------------
 
 1. **Variable Declaration and Assignment**
    - Variables are declared using the keyword `VAR` followed by an identifier and assignment (`=`).
@@ -119,71 +27,110 @@ Below is the BNF grammar that defines the syntax of this custom language. The gr
    - Supports unary plus (`+`) and unary minus (`-`) for arithmetic.
    - Logical negation (`NOT`) for boolean expressions.
 
-#### 4. Trade-offs
+-----------------------------------------
+                BNF Grammar
+-----------------------------------------
 
-1. **Simple Grammar**
-   - The grammar was designed to be simple and easily interpretable, which makes the language easy to learn.
-   - However, it limits the expressiveness of the language.
+1. Expression (expr)
+Represents expressions, which include assignments or conditional operations.
 
-2. **Statically Defined Functions**
-   - Functions are defined using the `FUNC` keyword, but the language lacks advanced features such as anonymous functions or closures, limiting functional programming capabilities.
+expr ::= 'VAR' IDENTIFIER '=' expr
+       | comp-expr ( ('AND' | 'OR') comp-expr )*
 
-3. **Limited Data Types**
-   - Currently supports only integer values.
-   - No support for floating-point numbers, strings, arrays, or complex data structures.
 
-4. **Basic Control Flow**
-   - The `IF`, `ELIF`, and `ELSE` control flow statements are present.
-   - No loops (`for`, `while`), which limits iteration abilities.
+Includes:
+    - Variable Assignments: VAR IDENTIFIER = expr
+    - Logical Expressions: Logical operations involving AND and OR.
 
-5. **Error Handling**
-   - Errors like division by zero are handled gracefully, but error messages are basic.
-   - No sophisticated error handling or exception mechanism.
+2. Comparison Expression (comp-expr)
+Represents comparison expressions, supporting basic arithmetic comparisons and logical NOT.
 
-#### 5. Limitations
+comp-expr ::= 'NOT' comp-expr
+            | arith-expr ( ('==' | '!=' | '<' | '>' | '<=' | '>=') arith-expr )*
 
-1. **Lack of Complex Data Types**
-   - The language only supports integers and lacks complex data types such as arrays, dictionaries, or strings.
+Includes:
+    - Logical Negation: NOT comp-expr
+    - Arithmetic Comparisons: Using ==, !=, <, >, <=, >=.
 
-2. **No Built-in Functions or Libraries**
-   - The language lacks built-in functions and standard libraries for common operations like input/output, mathematical functions, or string manipulation.
+3. Arithmetic Expression (arith-expr)
+Represents arithmetic expressions involving addition or subtraction.
 
-3. **No Type System**
-   - No type system or type checking.
-   - Variables hold only integer values, and functions also return only integer values, limiting versatility.
+arith-expr ::= term ( ('+' | '-') term )*
 
-4. **No Loop Constructs**
-   - No constructs for iteration (`for` or `while` loops).
-   - Users must use recursion for iterative behavior, which can be less efficient and harder to write.
+Includes:
+    - Addition and Subtraction: Operations between terms.
 
-5. **No Classes or Object-Oriented Features**
-   - No classes or objects.
-   - The language lacks support for OOP, which may hinder the ability to model complex systems.
+4. Term (term)
+Represents multiplication, division, and modulo operations between factors.
 
-#### 6. Example Programs
+term ::= factor ( ('*' | '/' | '%') factor )*
 
+Includes:
+    - Multiplication, Division, and Modulo: Operations between factors.
+
+5. Function Call (call)
+Represents a function call.
+
+call ::= factor ( '(' ( expr (',' expr)* )? ')' )?
+
+
+Includes:
+    - A function followed by optional arguments enclosed in parentheses.
+    - Allows zero or more arguments, separated by commas.
+
+6. Factor (factor)
+Represents atomic components of expressions.
+
+factor ::= INT
+         | IDENTIFIER
+         | ( '+' | '-' ) factor
+         | '(' expr ')'
+         | if-expr
+         | func-def
+
+
+Includes:
+    - Atomic Elements: Integers, identifiers (variables).
+    - Unary Operations: Unary plus and minus.
+    - Parenthesized Expressions: ( expr )
+    - Conditional and Function Definitions: if-expr, func-def.
+
+7. Conditional Expression (if-expr)
+Represents conditional (if-elif-else) expressions.
+
+if-expr ::= 'IF' expr 'THEN' expr
+          | ('ELIF' expr 'THEN' expr )*
+          | ('ELSE' expr )?
+
+Includes:
+    - IF Block: Followed by optional ELIF and ELSE blocks.
+    - Execution Sequence: Conditions are evaluated in sequence, and the corresponding expression is executed.
+
+8. Function Definition (func-def)
+Represents function definition.
+
+func-def ::= 'FUNC' IDENTIFIER?
+           | '(' ( IDENTIFIER (',' IDENTIFIER)* )? ')'
+           | '->' expr
+
+Includes:
+    - Optional Function Name: Functions can have an optional name.
+    - Arguments: Can have an argument list.
+    - Function Body: Defined after ->.
+
+-----------------------------------------
+           Example Programs
+-----------------------------------------
 1. **Variable Assignment and Arithmetic Operations**
-   ```plaintext
    VAR x = 5
    VAR y = x + 3
    VAR z = y * 2
-   ```
 
 2. **If-Else Conditional**
-   ```plaintext
    IF x > 4 THEN y = 10
    ELIF x == 4 THEN y = 8
    ELSE y = 0
-   ```
 
 3. **Function Definition and Function Call**
-   ```plaintext
    FUNC add(x, y) -> x + y
    VAR result = add(5, 3)
-   ```
-
-#### 7. Conclusion
-
-The language presented here is designed with simplicity and clarity in mind. It offers basic features like variable assignment, arithmetic operations, comparisons, control flow, and functions. However, it lacks support for complex data structures, error handling, iteration, and object-oriented programming, which limits its usability in complex applications. The BNF grammar effectively describes the language but reflects its simplicity and limitations.
-
-This language would be suitable for educational purposes, such as learning parsing techniques, implementing basic interpreters, and understanding core programming concepts.
