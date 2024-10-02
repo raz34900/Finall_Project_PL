@@ -1,0 +1,87 @@
+BNF Grammar
+1. Expression (expr)
+Represents expressions, which include assignments or conditional operations.
+
+expr ::= 'VAR' IDENTIFIER '=' expr
+       | comp-expr ( ('AND' | 'OR') comp-expr )*
+
+
+Includes:
+    - Variable Assignments: VAR IDENTIFIER = expr
+    - Logical Expressions: Logical operations involving AND and OR.
+
+2. Comparison Expression (comp-expr)
+Represents comparison expressions, supporting basic arithmetic comparisons and logical NOT.
+
+comp-expr ::= 'NOT' comp-expr
+            | arith-expr ( ('==' | '!=' | '<' | '>' | '<=' | '>=') arith-expr )*
+
+Includes:
+    - Logical Negation: NOT comp-expr
+    - Arithmetic Comparisons: Using ==, !=, <, >, <=, >=.
+
+3. Arithmetic Expression (arith-expr)
+Represents arithmetic expressions involving addition or subtraction.
+
+arith-expr ::= term ( ('+' | '-') term )*
+
+Includes:
+    - Addition and Subtraction: Operations between terms.
+
+4. Term (term)
+Represents multiplication, division, and modulo operations between factors.
+
+term ::= factor ( ('*' | '/' | '%') factor )*
+
+Includes:
+    - Multiplication, Division, and Modulo: Operations between factors.
+
+5. Function Call (call)
+Represents a function call.
+
+call ::= factor ( '(' ( expr (',' expr)* )? ')' )?
+
+
+Includes:
+    - A function followed by optional arguments enclosed in parentheses.
+    - Allows zero or more arguments, separated by commas.
+
+6. Factor (factor)
+Represents atomic components of expressions.
+
+factor ::= INT
+         | IDENTIFIER
+         | ( '+' | '-' ) factor
+         | '(' expr ')'
+         | if-expr
+         | func-def
+
+
+Includes:
+    - Atomic Elements: Integers, identifiers (variables).
+    - Unary Operations: Unary plus and minus.
+    - Parenthesized Expressions: ( expr )
+    - Conditional and Function Definitions: if-expr, func-def.
+
+7. Conditional Expression (if-expr)
+Represents conditional (if-elif-else) expressions.
+
+if-expr ::= 'IF' expr 'THEN' expr
+          | ('ELIF' expr 'THEN' expr )*
+          | ('ELSE' expr )?
+
+Includes:
+    - IF Block: Followed by optional ELIF and ELSE blocks.
+    - Execution Sequence: Conditions are evaluated in sequence, and the corresponding expression is executed.
+
+8. Function Definition (func-def)
+Represents function definition.
+
+func-def ::= 'FUNC' IDENTIFIER?
+           | '(' ( IDENTIFIER (',' IDENTIFIER)* )? ')'
+           | '->' expr
+
+Includes:
+    - Optional Function Name: Functions can have an optional name.
+    - Arguments: Can have an argument list.
+    - Function Body: Defined after ->.
