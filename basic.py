@@ -961,51 +961,6 @@ class Number(Value):
         return new_number
     
 class Function(Value):
-    # def __init__(self, name, body_node, arg_name):
-    #     super().__init__()
-    #     self.name = name or "<anonymous>"
-    #     self.body_node = body_node
-    #     self.arg_name = arg_name
-    #
-    # def execute(self, args):
-    #     res= RunTimeResult()
-    #     interpreter = Interpreter()
-    #     new_context = Context(self.name, self.context, self.pos_start)
-    #     new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
-    #
-    #     if len(args) > len(self.arg_name):
-    #         return res.failure(RunTimeError(
-	# 			self.pos_start, self.pos_end,
-	# 			f"{len(args) - len(self.arg_name)} too many args passed into '{self.name}'",
-	# 			self.context
-	# 		))
-	#
-    #     if len(args) < len(self.arg_name):
-    #         return res.failure(RunTimeError(
-	# 			self.pos_start, self.pos_end,
-	# 			f"{len(self.arg_name) - len(args)} too few args passed into '{self.name}'",
-	# 			self.context
-	# 		))
-    #
-    #     for i in range(len(args)):
-    #         arg_name = self.arg_name[i]
-    #         arg_value = args[i]
-    #         arg_value.set_context(new_context)
-    #         new_context.symbol_table.set(arg_name, arg_value)
-    #
-    #     value = res.register(interpreter.visit(self.body_node, new_context))
-    #     if res.error: return res
-    #     return res.success(value)
-    #
-    # def copy(self):
-    #     new_function = Function(self.name, self.body_node, self.arg_name)
-    #     new_function.set_context(self.context)
-    #     new_function.set_pos(self.pos_start, self.pos_end)
-    #     return new_function
-    #
-    # def __repr__(self):
-    #     return f"<function {self.name}>"
-
     def __init__(self, name, body_node, arg_name):
         super().__init__()
         self.name = name or "<anonymous>"
@@ -1245,16 +1200,6 @@ class Interpreter:
         return res.success(None)
         
     def visit_FuncDefNode(self, node, context):
-        # res = RunTimeResult()
-        # func_name = node.var_name_tok.value if node.var_name_tok else None # checks if the function has a name
-        # body_node = node.body_node
-        # arg_names = [arg_name.value for arg_name in node.arg_name_toks] # gets the arguments of the function
-        # func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start, node.pos_end)
-        #
-        # if node.var_name_tok:
-        #     context.symbol_table.set(func_name, func_value)
-        # return res.success(func_value)
-
         res = RunTimeResult()
         func_name = node.var_name_tok.value if node.var_name_tok else None  # Check if the function has a name
         body_node = node.body_node
@@ -1276,42 +1221,6 @@ class Interpreter:
 
         return res.success(func_value)
 
-    # def visit_CallNode(self, node, context):
-    #     res = RunTimeResult()
-    #     args = []
-    #
-    #     value_to_call = res.register(self.visit(node.node_to_call, context))
-    #     if res.error: return res
-    #     value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end) # gets the function to call
-    #
-    #     for arg_node in node.arg_nodes: # gets the arguments of the function
-    #         args.append(res.register(self.visit(arg_node, context)))
-    #         if res.error: return res
-    #
-    #     return_value = res.register(value_to_call.execute(args))
-    #     if res.error: return res
-    #     return res.success(return_value)
-    # def visit_CallNode(self, node, context):
-    #     res = RunTimeResult()
-    #     args = []
-    #
-    #     value_to_call = res.register(self.visit(node.node_to_call, context))
-    #     if res.error: return res
-    #     value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)  # gets the function to call
-    #
-    #     for arg_node in node.arg_nodes:  # gets the arguments of the function
-    #         args.append(res.register(self.visit(arg_node, context)))
-    #         if res.error: return res
-    #
-    #     # Execute the function and get the value and trace
-    #     return_value, call_trace = res.register(value_to_call.execute(args))
-    #     if res.error: return res
-    #
-    #     # Print or store the call trace
-    #     for trace in call_trace:
-    #         print(trace)
-    #
-    #     return res.success(return_value)
     def visit_CallNode(self, node, context):
         res = RunTimeResult()
         args = []
