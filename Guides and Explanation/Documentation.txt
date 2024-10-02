@@ -134,3 +134,4 @@ Includes:
 3. **Function Definition and Function Call**
    FUNC add(x, y) -> x + y
    VAR result = add(5, 3)
+
