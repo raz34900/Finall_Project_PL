@@ -7,6 +7,7 @@
 
 2. **Statically Defined Functions**
    - Functions are defined using the `FUNC` keyword, but the language lacks advanced features such as anonymous functions or closures, limiting functional programming capabilities.
+   - Lambda functions are defined using the 'LAMBDA' keyword
 
 3. **Limited Data Types**
    - Currently supports only integer values.

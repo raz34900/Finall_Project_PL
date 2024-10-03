@@ -1,0 +1,97 @@
+1. Expression
+<expr> ::= 'VAR' IDENTIFIER '=' <expr>
+        | <comp-expr> <expr-rest>
+
+<expr-rest> ::= <logical-op> <comp-expr> <expr-rest>
+             | ε  (* Empty string *)
+
+2. Logical Operators
+<logical-op> ::= 'AND'
+              | 'OR'
+
+3. Comparison Expression and Operators
+<comp-expr> ::= 'NOT' <comp-expr>
+             | <arith-expr> <comp-expr-rest>
+
+<comp-expr-rest> ::= <comp-op> <arith-expr> <comp-expr-rest>
+                  | ε
+
+<comp-op> ::= '=='
+           | '!='
+           | '>'
+           | '<'
+           | '>='
+           | '<='
+
+4. Arithmetic Expression
+<arith-expr> ::= <term> <arith-expr-rest>
+
+<arith-expr-rest> ::= <add-sub-op> <term> <arith-expr-rest>
+                   | ε
+
+5. Additive Operators
+<add-sub-op> ::= '+'
+              | '-'
+
+6. Term
+<term> ::= <factor> <term-rest>
+
+<term-rest> ::= <mul-div-op> <factor> <term-rest>
+             | ε
+
+7. Multiplicative Operators
+<mul-div-op> ::= '*'
+              | '/'
+
+8. Factor
+<factor> ::= INTEGER
+          | IDENTIFIER <call-optional>
+          | <unary-op> <factor>
+          | '(' <expr> ')'
+          | <if-expr>
+          | <func-def>
+          | <lambda-expr>
+
+9. Unary Operators
+<unary-op> ::= '+'
+            | '-'
+
+10. Call Optional
+<call-optional> ::= '(' <argument-list-optional> ')'
+                 | ε
+
+11. Argument List Optional
+<argument-list-optional> ::= <argument-list>
+                          | ε
+
+<argument-list> ::= <expr> <argument-list-rest>
+
+<argument-list-rest> ::= ',' <expr> <argument-list-rest>
+                      | ε
+
+12. If Expression
+<if-expr> ::= 'IF' <expr> 'THEN' <expr> <elif-expr-list> <else-expr-optional>
+
+<elif-expr-list> ::= <elif-expr> <elif-expr-list>
+                  | ε
+
+<elif-expr> ::= 'ELIF' <expr> 'THEN' <expr>
+
+<else-expr-optional> ::= 'ELSE' <expr>
+                      | ε
+
+Function and Lambda Definition
+<func-def> ::= 'FUNC' <identifier-optional> '(' <parameter-list-optional> ')' '->' <expr>
+
+<identifier-optional> ::= IDENTIFIER
+                       | ε
+
+<parameter-list-optional> ::= <parameter-list>
+                           | ε
+
+<parameter-list> ::= IDENTIFIER <parameter-list-rest>
+
+<parameter-list-rest> ::= ',' IDENTIFIER <parameter-list-rest>
+                       | ε
+
+<lambda-expr> ::= 'LAMBDA' <parameter-list-optional> '->' <expr>
