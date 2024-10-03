@@ -15,6 +15,7 @@ factor  	: INT|IDENTIFIRE
 			: LPAREN expr RPAREN
 			: if-expr
 			: func-def
+			: lambda-expr
 			
 if-expr		: KEYWORD:IF expr KEYWORD:THEN expr 
 			: (KEYWORD:ELIF expr KEYWORD:THEN expr)*
@@ -23,4 +24,5 @@ if-expr		: KEYWORD:IF expr KEYWORD:THEN expr
 func-def	: KEYWORD:FUNC IDENTIFIER?
 			: LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN
 			: ARROW expr
-			
+
+lambda-expr : KEYWORD:LAMBDA IDENTIFIER? (COMMA IDENTIFIER)* ARROW expr

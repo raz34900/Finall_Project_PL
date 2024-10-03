@@ -154,7 +154,8 @@ KEYWORDS = [
     'ELIF',
     'ELSE',
     'THEN',
-    'FUNC'
+    'FUNC',
+    'LAMBDA'
 ]
 
 
@@ -617,6 +618,11 @@ class Parser:
             func_def = res.register(self.func_def())
             if res.error: return res
             return res.success(func_def)
+
+        elif tok.matches(TT_KEYWORD, 'LAMBDA'):  # Added this condition
+            lambda_expr = res.register(self.lambda_expr())
+            if res.error: return res
+            return res.success(lambda_expr)
         
         elif tok.matches(TT_KEYWORD, 'IF'):
             if_expr = res.register(self.if_expr())
@@ -723,8 +729,51 @@ class Parser:
         node_to_return = res.register(self.expr())
         if res.error: return res
         return res.success(FuncDefNode(var_name_tok, arg_name_toks, node_to_return))
-            
 
+    def lambda_expr(self):
+        res = ParseResult()
+
+        if not self.current_tok.matches(TT_KEYWORD, 'LAMBDA'):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start,
+                self.current_tok.pos_end,
+                "Expected 'LAMBDA'"
+            ))
+
+        res.register(self.advance())
+
+        arg_name_toks = []
+
+        if self.current_tok.type == TT_IDENTIFIER:
+            arg_name_toks.append(self.current_tok)
+            res.register(self.advance())
+
+            while self.current_tok.type == TT_COMMA:
+                res.register(self.advance())
+
+                if self.current_tok.type != TT_IDENTIFIER:
+                    return res.failure(InvalidSyntaxError(
+                        self.current_tok.pos_start,
+                        self.current_tok.pos_end,
+                        "Expected identifier"
+                    ))
+
+                arg_name_toks.append(self.current_tok)
+                res.register(self.advance())
+
+        if self.current_tok.type != TT_ARROW:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start,
+                self.current_tok.pos_end,
+                "Expected '->'"
+            ))
+
+        res.register(self.advance())
+
+        body_node = res.register(self.expr())
+        if res.error: return res
+
+        return res.success(FuncDefNode(None, arg_name_toks, body_node))
 
     ########################
     def bin_op(self, func, ops):
@@ -834,6 +883,7 @@ class Value:
         return None, self.illegal_operation()
 
     def execute(self, args):
+
         return RunTimeResult().failure(self.illegal_operation())
     
     def is_true(self):
@@ -973,10 +1023,6 @@ class Function(Value):
         new_context = Context(self.name, self.context, self.pos_start)
         new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
 
-        # Create a trace log for function calls
-        call_trace = []
-
-        # Check if we have too many or too few arguments
         if len(args) > len(self.arg_name):
             return res.failure(RunTimeError(
                 self.pos_start, self.pos_end,
@@ -991,29 +1037,19 @@ class Function(Value):
                 self.context
             ))
 
-        # Assign the arguments to the function's local scope
         for i in range(len(args)):
             arg_name = self.arg_name[i]
             arg_value = args[i]
             arg_value.set_context(new_context)
             new_context.symbol_table.set(arg_name, arg_value)
 
-        # Recursion support: Add the function itself to the symbol table
-        new_context.symbol_table.set(self.name, self)
+        if self.name != "<anonymous>":  # Only set in symbol table if named
+            new_context.symbol_table.set(self.name, self)
 
-        # Log the function call with arguments
-        arg_str = ", ".join([f"{self.arg_name[i]}={args[i]}" for i in range(len(args))])
-        call_trace.append(f"Call: {self.name}({arg_str})")
-
-        # Execute the body of the function
         value = res.register(interpreter.visit(self.body_node, new_context))
         if res.error: return res
 
-        # Log the function return value
-        call_trace.append(f"Return: {self.name} -> {value}")
-
-        # Store the trace in the result
-        return res.success((value, call_trace))
+        return res.success(value)
 
     def copy(self):
         new_function = Function(self.name, self.body_node, self.arg_name)
@@ -1234,12 +1270,8 @@ class Interpreter:
             if res.error: return res
 
         # Execute the function (functions are pure, no state changes)
-        return_value, call_trace = res.register(value_to_call.execute(args))
+        return_value = res.register(value_to_call.execute(args))
         if res.error: return res
-
-        # Print or store the call trace (if desired)
-        for trace in call_trace:
-            print(trace)
 
         return res.success(return_value)
 #  _____  _    _ _   _
