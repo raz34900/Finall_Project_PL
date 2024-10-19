@@ -43,16 +43,12 @@
    VAR y = x + 3
    VAR z = y * 2
 
-2. **If-Else Conditional**
-   IF x > 4 THEN y = 10
-   ELIF x == 4 THEN y = 8
-   ELSE y = 0
 
-3. **Function Definition and Function Call**
+2. **Function Definition and Function Call**
    FUNC add(x, y) -> x + y
    VAR result = add(5, 3)
 
-4. Anonymous Functions (Lambda Expressions)
+3. Anonymous Functions (Lambda Expressions)
     # Assigning a lambda expression to a variable
     VAR increment = LAMBDA x -> x + 1
     VAR y = increment(5)  # y is 6
