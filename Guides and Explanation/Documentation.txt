@@ -61,9 +61,6 @@
     VAR multiply = LAMBDA x, y -> x * y
     VAR product = multiply(4, 5)  # product is 20
 
-    # Using a lambda expression directly without assignment
-    VAR square = (LAMBDA x -> x * x)(6)  # square is 36
-
     # Passing a lambda as an argument to another function
     FUNC applyTwice(f, x) -> f(f(x))
     VAR result = applyTwice(LAMBDA y -> y + 2, 5)  # result is 9
